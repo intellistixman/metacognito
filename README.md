@@ -1,2 +1,3 @@
-# metacognit
+# metacognito
+
 Open source self awareness tool
