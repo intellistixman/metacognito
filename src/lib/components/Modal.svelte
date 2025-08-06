@@ -3,6 +3,7 @@
 	import { drawerStore } from '$lib/stores/drawer.svelte';
 	import { X } from '@lucide/svelte';
 	import Todo from './Todo.svelte';
+	import Prompts from './Prompts.svelte';
 
 	let drawerState = $state(false);
 
@@ -18,18 +19,9 @@
 	}
 </script>
 
-<!--
-Tips for Drawer modals:
-- Use `contentBase` to set styles, including height/width
-- Set justify-start to align to the left
-- Clear the align and padding styles
-- Use `positionerClasses` to set the
-- Set transition.x values that matches content width in pixels
--->
-
 <Modal
 	open={drawerState}
-	contentBase="bg-surface-100-900 p-4 space-y-4 shadow-xl w-[480px] h-screen"
+	contentBase="bg-surface-100-900 p-4 space-y-4 shadow-xl w-[480px] h-screen overflow-y-auto"
 	positionerJustify="justify-start"
 	positionerAlign=""
 	positionerPadding=""
@@ -44,5 +36,7 @@ Tips for Drawer modals:
 			</button>
 		</header>
 		<Todo />
+		<br />
+		<Prompts />
 	{/snippet}
 </Modal>

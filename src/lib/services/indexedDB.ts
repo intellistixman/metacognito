@@ -5,10 +5,20 @@ export interface TodoItem {
 	createdAt: Date;
 }
 
+export interface Prompt {
+	slug: string;
+	prompt: string;
+}
+
+interface Prompts {
+	[key: string]: Prompt;
+}
+
 class IndexedDBService {
 	private dbName = 'TodoDB';
-	private version = 1;
+	private version = 2;
 	private storeName = 'todos';
+	private promptsStoreName = 'prompts';
 	private db: IDBDatabase | null = null;
 
 	async init(): Promise<void> {
@@ -34,6 +44,14 @@ class IndexedDBService {
 					});
 					store.createIndex('createdAt', 'createdAt', { unique: false });
 				}
+
+				if (!db.objectStoreNames.contains(this.promptsStoreName)) {
+					const store = db.createObjectStore(this.promptsStoreName, {
+						keyPath: 'slug',
+						autoIncrement: true
+					});
+					store.createIndex('createdAt', 'createdAt', { unique: false });
+				}
 			};
 		});
 	}
@@ -54,6 +72,47 @@ class IndexedDBService {
 
 			request.onerror = () => {
 				reject(new Error('Failed to fetch todos'));
+			};
+		});
+	}
+
+	async getAllPrompts(): Promise<Prompts> {
+		return new Promise((resolve, reject) => {
+			const transaction = this.db!.transaction([this.promptsStoreName], 'readonly');
+			const store = transaction.objectStore(this.promptsStoreName);
+			const request = store.getAll();
+
+			request.onsuccess = () => {
+				resolve(
+					request.result.reduce((obj, prompt) => {
+						obj[prompt.slug] = prompt;
+						return obj;
+					}, {} as Prompts)
+				);
+			};
+
+			request.onerror = () => {
+				reject(new Error('Failed to fetch prompts'));
+			};
+		});
+	}
+
+	async updatePrompt(prompt: Prompt): Promise<void> {
+		if (!this.db) {
+			await this.init();
+		}
+
+		return new Promise((resolve, reject) => {
+			const transaction = this.db!.transaction([this.promptsStoreName], 'readwrite');
+			const store = transaction.objectStore(this.promptsStoreName);
+			const request = store.put(prompt);
+
+			request.onsuccess = () => {
+				resolve();
+			};
+
+			request.onerror = () => {
+				reject(new Error('Failed to update prompt'));
 			};
 		});
 	}
@@ -93,7 +152,10 @@ class IndexedDBService {
 		return new Promise((resolve, reject) => {
 			const transaction = this.db!.transaction([this.storeName], 'readwrite');
 			const store = transaction.objectStore(this.storeName);
-			const request = store.put(todo);
+
+			const request = store.put({
+				...todo // Cannot clone object directly
+			});
 
 			request.onsuccess = () => {
 				resolve();
