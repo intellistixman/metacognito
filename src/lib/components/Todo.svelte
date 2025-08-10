@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { dbService, type TodoItem } from '$lib/services/indexedDB';
-	import { toaster } from './toaster';
+	import { toaster } from '../stores/toaster.svelte';
 
 	let todoItems: TodoItem[] = $state([]);
 	let newTask = $state('');

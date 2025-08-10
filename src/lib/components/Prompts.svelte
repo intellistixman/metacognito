@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { dbService } from '$lib/services/indexedDB';
-	import { toaster } from './toaster';
+	import { toaster } from '../stores/toaster.svelte';
 
 	const SYSTEM_PROMPT_SLUG = 'system';
 	const METACOGNITIVE_PROMPT_SLUG = 'metacognitive';

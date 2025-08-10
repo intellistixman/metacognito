@@ -36,7 +36,7 @@
 			</button>
 		</header>
 		<Todo />
-		<br />
+		<hr class="hr border-t-2" />
 		<Prompts />
 	{/snippet}
 </Modal>
